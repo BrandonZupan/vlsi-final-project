@@ -359,14 +359,18 @@ module darkriscv
     wire        [31:0] U2REGX = XMCC ? UIMM : U2REG;
 
 `ifdef M_EXTENSION
-    wire [63:0] MUL_RES = U1REG * U2REGX;
-    wire [31:0] MULDIV = FCT3==0 ? MUL_RES[31:0] : 
-                         FCT3==1 ? MUL_RES[63:32] :
-                         FCT3==4 ? U1REG / U2REGX :
-                         FCT3==6 ? U1REG % U2REGX : 0;
+
+    wire [7:0] wallace_out;
+    wallace_tree wallace_tree0 (
+        .a(U1REG[7:0]),
+        .b(U2REG[7:0]),
+        .product(wallace_out)
+    );
+
+    wire [31:0] MULDIV = FCT3==0 ? {24'h0, wallace_out} : 32'hZ;
 `endif
 
-    wire [31:0] RMDATA = FCT3==7 ? U1REG&S2REGX :
+    wire [31:0] RMDATA_NORMAL = FCT3==7 ? U1REG&S2REGX :
                          FCT3==6 ? U1REG|S2REGX :
                          FCT3==4 ? U1REG^S2REGX :
                          FCT3==3 ? U1REG<U2REGX : // unsigned
@@ -375,10 +379,20 @@ module darkriscv
                          FCT3==1 ? S1REG<<U2REGX[4:0] :
                          //FCT3==5 ?
                          !FCT7[5] ? S1REG>>U2REGX[4:0] :
+`ifdef M_EXTENSION
+                         
+`endif
 `ifdef MODEL_TECH
                                    -((-S1REG)>>U2REGX[4:0]); // workaround for modelsim
 `else
                                    $signed(S1REG)>>>U2REGX[4:0];  // (FCT7[5] ? U1REG>>>U2REG[4:0] :
+`endif
+
+// new stuff, choose either the original or multiply depending on FUNCTION7
+`ifdef M_EXTENSION
+    wire [31:0] RMDATA = FCT7==1 ? MULDIV : RMDATA_NORMAL;     // FCT7 is 1 for muldiv
+`else
+    wire [31:0] RMDATA = RMDATA_NORMAL;
 `endif
 
 `ifdef __MAC16X16__
