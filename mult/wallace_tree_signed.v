@@ -1,11 +1,30 @@
 `timescale 1ns / 1ps
 
-module wallace_tree(
+module wallace_tree_signed(
     input [7:0] a, //8-bit multiplicand
     input [7:0] b, //8 -bit multiplier
     output [15:0] product //16-bit prodcut
 );
 
+reg [15:0] unsigned_a;
+reg [15:0] unsigned_b;
+
+//convert the negative number to unsigned magnitude
+always@(a, b)begin
+    if(a[7] == 1)begin 
+        unsigned_a = ~(a) + 1;
+    end
+    else if(a[7] == 0)begin
+        unsigned_a = a;
+    end
+    
+    if(b[7] == 1)begin
+        unsigned_b = ~(b) + 1;
+    end
+    else if(b[7] == 0)begin
+        unsigned_b = b;
+    end
+end
 
 // Step 1: generate partial products
 wire [7:0] pp[7:0]; //8x8 2D array 
@@ -14,7 +33,7 @@ genvar i, j;
 generate
     for (i = 0; i < 8; i = i + 1) begin : gen_pp
         for (j = 0; j < 8; j = j + 1) begin : gen_pp_row
-            assign pp[i][j] = a[i] & b[j];
+            assign pp[i][j] = unsigned_a[i] & unsigned_b[j];
         end
     end
 endgenerate
@@ -111,21 +130,19 @@ full_adder f45(s51, c48, c49, s52, c52);
 full_adder f46(s53, c51, c52, s54, c54);
 full_adder f47(pp[7][7], c53, c54, s55, c55);
 
-wire [15:0] ca;
-wire [15:0] cb; 
+wire [15:0] unsigned_product;
+assign unsigned_product = {c55, s55, s54, s52, s49, s45, s40, s34, s27, s20, s14, s9, s5, s2, s0, pp[0][0]};
 
-
-wire [15:0] sum;
-wire cout;
-wire [15:0] product;
-
-assign ca = {c55, s55, s54, s52, s49, s45, s40, s34, s27, s20, s14, s9, s5, s2, s0, pp[0][0]};
-assign cb = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//fast adder
-CLA cla(ca, cb, 0, sum, cout);
-
-assign product = sum;
-
-
-//final adder 
+//convert back to two's complement if result is supposed to be negative
+reg [15:0] product_reg;
+always@(unsigned_product)begin
+    if((a[7] == 1 && b[7] == 0) || (a[7] == 0 && b[7] == 1))begin
+        product_reg = ~(unsigned_product) + 1;
+    end
+    else begin
+        product_reg = unsigned_product;
+    end
+end
+assign product = product_reg;
+ 
 endmodule
