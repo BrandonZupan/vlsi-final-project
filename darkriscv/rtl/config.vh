@@ -34,6 +34,10 @@
 // darkriscv configuration
 ////////////////////////////////////////////////////////////////////////////////
 
+// Multiply extension
+
+
+
 // pipeline stages:
 //
 // 2-stage version: core and memory in different clock edges result in less
