@@ -2,8 +2,8 @@
 
 module wallace_tree_signed_tb;
 
-reg [7:0] a, b;             // Input stimulus for the Wallace Tree multiplier
-wire [15:0] product;        // Output from the Wallace Tree multiplier
+reg [15:0] a, b;             // Input stimulus for the Wallace Tree multiplier
+wire [31:0] product;        // Output from the Wallace Tree multiplier
 
 // Instantiate the Wallace Tree multiplier
 wallace_tree_signed uut (
@@ -37,6 +37,19 @@ initial begin
     a = 8'hFF; b = 8'hFF;
     #10;
     if (product !== 16'h01) $display("Test failed for input a=0x0FF, b=0xFF");
+
+    a = 16'hFFFF; b = 16'h1;
+    #10;
+    if (product !== 32'h1C71E38E) $display("Test failed for input a=0x0FF, b=0xFF");
+
+    a = 16'h8000; b = 16'h8000;
+    #10;
+    if (product !== 32'h1C71E38E) $display("Test failed for input a=0x0FF, b=0xFF");
+    
+    a = 16'h8000; b = 16'h3000;
+    #10;
+    if (product !== 32'h1C71E38E) $display("Test failed for input a=0x0FF, b=0xFF");
+
 
     // Add more test cases as needed
     // ...
