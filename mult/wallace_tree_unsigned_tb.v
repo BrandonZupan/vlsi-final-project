@@ -1,12 +1,12 @@
 `timescale 1ns / 1ps
 
-module wallace_tree_tb;
+module wallace_tree_unsigned_tb;
 
 reg [7:0] a, b;             // Input stimulus for the Wallace Tree multiplier
 wire [15:0] product;        // Output from the Wallace Tree multiplier
 
 // Instantiate the Wallace Tree multiplier
-wallace_tree uut (
+wallace_tree_unsigned uut (
     .a(a), 
     .b(b), 
     .product(product)
