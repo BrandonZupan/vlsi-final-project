@@ -360,14 +360,41 @@ module darkriscv
 
 `ifdef M_EXTENSION
 
-    wire [7:0] wallace_out;
-    wallace_tree wallace_tree0 (
+    wire [15:0] wallace_out_unsigned;
+    wallace_tree_unsigned wallace_tree0 (
         .a(U1REG[7:0]),
-        .b(U2REG[7:0]),
-        .product(wallace_out)
+        .b(U2REGX[7:0]),
+        .product(wallace_out_unsigned)
+    );
+    
+    wire [15:0] wallace_out_signed;
+    wallace_tree_signed wallace_tree1 (
+        .a(U1REG[7:0]),
+        .b(U2REGX[7:0]),
+        .product(wallace_out_signed)
     );
 
-    wire [31:0] MULDIV = FCT3==0 ? {24'h0, wallace_out} : 32'hZ;
+    wire [7:0] divide_out;
+    wire [7:0] divide_rem;
+    Divider8bit divider (
+        .A(U1REG[7:0]),
+        .B(U2REGX[7:0]),
+        .Qf(divide_out),
+        .R(divide_rem)
+    );
+    
+    // TODO: add this to "decoder" or whatever it is
+    // TODO: Add divide
+
+    wire [31:0] MULDIV = FCT3==0 ? {24'h0, wallace_out_unsigned[7:0]} :     // mul
+                         FCT3==1 ? {24'h0, wallace_out_signed[15:8]} :    // mulh
+                         FCT3==2 ? {24'h0, wallace_out_signed[15:8]} :      // mulshu
+                         FCT3==3 ? {24'h0, wallace_out_unsigned[15:8]} :      // mulhu
+                         FCT3==4 ? {24'h0, divide_out} :                    // div
+                         FCT3==5 ? {24'h0, divide_out} :                    // divu
+                         FCT3==6 ? {24'h0, divide_rem} :                    // rem
+                         FCT3==7 ? {24'h0, divide_rem} :                    // remu
+                         32'hZ ;
 `endif
 
     wire [31:0] RMDATA_NORMAL = FCT3==7 ? U1REG&S2REGX :
@@ -390,7 +417,7 @@ module darkriscv
 
 // new stuff, choose either the original or multiply depending on FUNCTION7
 `ifdef M_EXTENSION
-    wire [31:0] RMDATA = FCT7==1 ? MULDIV : RMDATA_NORMAL;     // FCT7 is 1 for muldiv
+    wire [31:0] RMDATA = (FCT7==1 && XRCC) ? MULDIV : RMDATA_NORMAL;     // FCT7 is 1 for muldiv
 `else
     wire [31:0] RMDATA = RMDATA_NORMAL;
 `endif
