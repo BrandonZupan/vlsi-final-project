@@ -26,11 +26,11 @@
 
 // TB - Only enable one
 // tb_dlatch_reset.v
-kogge_stone_4_tb.v
+kogge_stone_16_tb.v
 
 // Design Files
 black_cell.v
 gray_cell.v
 pre_process.v
 sum.v
-kogge_stone_4.v
+kogge_stone_16.v
