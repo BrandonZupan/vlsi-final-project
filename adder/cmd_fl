@@ -1,0 +1,36 @@
+// commandline options and file lists
+// Yipeng Wang
+// 10/18/22
+// ----------------------------------
+
+// Acceleration options, check doc before using
+// -caxl
+// +speedup
+
+
+// overwrite timescale (comment out if you do not want)
+-timescale=1ns/1ns
+
+// SystemVerilog flag, if you are using Systemverilog
+// Note that SystemVerilog is back compatable with Verilog
+// -sverilog
+
+
+// -y with folder, which contains source files
+// -y models2
+
+// -v with Verilog or SystemVerilog files
+// -v
+// lib1
+// List your files here -------------
+
+// TB - Only enable one
+// tb_dlatch_reset.v
+kogge_stone_4_tb.v
+
+// Design Files
+black_cell.v
+gray_cell.v
+pre_process.v
+sum.v
+kogge_stone_4.v

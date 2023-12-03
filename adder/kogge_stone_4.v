@@ -22,13 +22,15 @@ generate
 endgenerate
 
 // layer 1
+// b b g g
 wire [3:0] p_1;
 wire [3:0] g_1;
 
 assign p_1[0] = p_0[0];
-assign g_1[0] = g_0[0];
+// assign g_1[0] = g_0[0];
 
-gray_cell gs11 (p_0[1], g_0[1], g_0[0], g_1[1]);
+gray_cell gs10 (p_0[0], g_0[0], cin, g_1[0]);
+gray_cell gs11 (p_0[1], g_0[1], g_1[0], g_1[1]);
 
 generate 
     for (i = 2; i < 4; i = i + 1) begin
@@ -37,6 +39,7 @@ generate
 endgenerate
 
 // layer 2
+// g g . .
 wire [3:0] p_2;
 wire [3:0] g_2;
 
