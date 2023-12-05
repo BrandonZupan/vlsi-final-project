@@ -8,18 +8,34 @@ module wallace_tree_signed(
 
 reg [15:0] unsigned_a;
 reg [15:0] unsigned_b;
+wire cout_a;
+wire cout_b;
+
+wire [15:0] not_a;
+assign not_a = ~a;
+
+wire [15:0] a_neg;
+kogge_stone_16 ks_a (not_a, 16'b1, 1'b0, a_neg, cout_a);
+
+wire [15:0] not_b;
+assign not_b = ~b;
+
+wire [15:0] b_neg;
+kogge_stone_16 ks_b (not_b, 16'b1, 1'b0, b_neg, cout_b);
 
 //convert the negative number to unsigned magnitude
 always@(a, b)begin
     if(a[15] == 1)begin 
-        unsigned_a = ~(a) + 1;
+        // unsigned_a = ~(a) + 1;
+        unsigned_a = a_neg;
     end
     else if(a[15] == 0)begin
         unsigned_a = a;
     end
     
     if(b[15] == 1)begin
-        unsigned_b = ~(b) + 1;
+        // unsigned_b = ~(b) + 1;
+        unsigned_b = b_neg;
     end
     else if(b[15] == 0)begin
         unsigned_b = b;
@@ -369,10 +385,18 @@ assign unsigned_product = {c225, s225, s226, s227, s228, s229, s230, s231, s232,
  
 //convert back to two's complement if result is supposed to be negative
 reg [31:0] product_reg;
+wire prod_c;
+
+wire [15:0] not_p;
+assign not_p = ~unsigned_product;
+
+wire [15:0] p_neg;
+kogge_stone_16 ks_p (not_p, 16'b1, 1'b0, p_neg, prod_c);
 
 always@(unsigned_product)begin
     if((a[15] == 1 && b[15] == 0) || (a[15] == 0 && b[15] == 1))begin
-        product_reg = ~(unsigned_product) + 1;
+        // product_reg = ~(unsigned_product) + 1;
+        product_reg = p_neg;
     end
     else begin
         product_reg = unsigned_product;
