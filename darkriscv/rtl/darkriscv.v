@@ -360,40 +360,38 @@ module darkriscv
 
 `ifdef M_EXTENSION
 
-    wire [15:0] wallace_out_unsigned;
+    wire [31:0] wallace_out_unsigned;
     wallace_tree_unsigned wallace_tree0 (
-        .a(U1REG[7:0]),
-        .b(U2REGX[7:0]),
+        .a(U1REG[15:0]),
+        .b(U2REGX[15:0]),
         .product(wallace_out_unsigned)
     );
     
-    wire [15:0] wallace_out_signed;
+    wire [31:0] wallace_out_signed;
     wallace_tree_signed wallace_tree1 (
-        .a(U1REG[7:0]),
-        .b(U2REGX[7:0]),
+        .a(U1REG[15:0]),
+        .b(U2REGX[15:0]),
         .product(wallace_out_signed)
     );
 
-    wire [7:0] divide_out;
-    wire [7:0] divide_rem;
-    Divider8bit divider (
-        .A(U1REG[7:0]),
-        .B(U2REGX[7:0]),
+    wire [15:0] divide_out;
+    wire [15:0] divide_rem;
+    Divider16bit divider (
+        .A(U1REG[15:0]),
+        .B(U2REGX[15:0]),
         .Qf(divide_out),
         .R(divide_rem)
     );
     
-    // TODO: add this to "decoder" or whatever it is
-    // TODO: Add divide
 
-    wire [31:0] MULDIV = FCT3==0 ? {24'h0, wallace_out_unsigned[7:0]} :     // mul
-                         FCT3==1 ? {24'h0, wallace_out_signed[15:8]} :    // mulh
-                         FCT3==2 ? {24'h0, wallace_out_signed[15:8]} :      // mulshu
-                         FCT3==3 ? {24'h0, wallace_out_unsigned[15:8]} :      // mulhu
-                         FCT3==4 ? {24'h0, divide_out} :                    // div
-                         FCT3==5 ? {24'h0, divide_out} :                    // divu
-                         FCT3==6 ? {24'h0, divide_rem} :                    // rem
-                         FCT3==7 ? {24'h0, divide_rem} :                    // remu
+    wire [31:0] MULDIV = FCT3==0 ? {'h0, wallace_out_unsigned[15:0]} :     // mul
+                         FCT3==1 ? {'h0, wallace_out_signed[31:16]} :    // mulh
+                         FCT3==2 ? {'h0, wallace_out_signed[31:16]} :      // mulshu
+                         FCT3==3 ? {'h0, wallace_out_unsigned[15:0]} :      // mulhu
+                         FCT3==4 ? {16'h0, divide_out} :                    // div
+                         FCT3==5 ? {16'h0, divide_out} :                    // divu
+                         FCT3==6 ? {16'h0, divide_rem} :                    // rem
+                         FCT3==7 ? {16'h0, divide_rem} :                    // remu
                          32'hZ ;
 `endif
 
@@ -577,17 +575,17 @@ module darkriscv
             $stop();
         end
         
-        if(!FLUSH && IDATA===32'dx)
-        begin
-            $display("invalid IDATA at %x",PC);
-            $stop();  
-        end
+        // if(!FLUSH && IDATA===32'dx)
+        // begin
+        //     $display("invalid IDATA at %x",PC);
+        //     $stop();  
+        // end
         
-        if(LCC && !HLT && DATAI===32'dx)
-        begin
-            $display("invalid DATAI@%x at %x",DADDR,PC);
-            $stop();
-        end
+        // if(LCC && !HLT && DATAI===32'dx)
+        // begin
+        //     $display("invalid DATAI@%x at %x",DADDR,PC);
+        //     $stop();
+        // end
 `endif
 
     end
