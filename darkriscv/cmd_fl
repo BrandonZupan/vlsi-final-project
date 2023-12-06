@@ -35,3 +35,21 @@ rtl/darkpll.v
 rtl/darkriscv.v
 rtl/darksocv.v
 rtl/darkuart.v
+
+// multiply
+// rtl/mult/CLA.v
+rtl/mult/full_adder.v
+rtl/mult/half_adder.v
+rtl/mult/wallace_tree_unsigned.v
+rtl/mult/wallace_tree_signed.v
+
+// divide
+rtl/div/Divider16bit.v
+rtl/div/FullSub_Mux.v
+
+// adder
+rtl/adder/gray_cell.v
+rtl/adder/black_cell.v
+rtl/adder/kogge_stone_16.v
+rtl/adder/pre_process.v
+rtl/adder/sum.v
