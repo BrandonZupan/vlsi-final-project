@@ -24,7 +24,7 @@ wire [15:0] b_neg;
 kogge_stone_16 ks_b (not_b, 16'b1, 1'b0, b_neg, cout_b);
 
 //convert the negative number to unsigned magnitude
-always@(a, b)begin
+always@(a_neg, b_neg) begin
     if(a[15] == 1)begin 
         // unsigned_a = ~(a) + 1;
         unsigned_a = a_neg;
@@ -385,15 +385,17 @@ assign unsigned_product = {c225, s225, s226, s227, s228, s229, s230, s231, s232,
  
 //convert back to two's complement if result is supposed to be negative
 reg [31:0] product_reg;
-wire prod_c;
+wire prod_carry0;
+wire prod_carry1;
 
-wire [15:0] not_p;
+wire [31:0] not_p;
 assign not_p = ~unsigned_product;
 
-wire [15:0] p_neg;
-kogge_stone_16 ks_p (not_p, 16'b1, 1'b0, p_neg, prod_c);
+wire [31:0] p_neg;
+kogge_stone_16 ks_p0 (not_p[15:0], 16'b1, 1'b0, p_neg[15:0], prod_carry0);
+kogge_stone_16 ks_p1 (not_p[31:16], 16'b0, prod_carry0, p_neg[31:16], prod_carry1);
 
-always@(unsigned_product)begin
+always@(p_neg)begin
     if((a[15] == 1 && b[15] == 0) || (a[15] == 0 && b[15] == 1))begin
         // product_reg = ~(unsigned_product) + 1;
         product_reg = p_neg;
