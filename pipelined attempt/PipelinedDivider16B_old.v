@@ -28,6 +28,11 @@ module PipelinedDivider16bit(
     output [15:0] R,
     output err
     );
+    
+reg [15:0] R1;
+reg [15:0] Qf1;
+assign R = R1;
+assign Qf = Qf1;
  
 // row 1 
 wire Bout_01;
@@ -900,27 +905,27 @@ assign Q[0] = (~r16_Ctrl) & r16_Bors;
 
 assign Qflip = (~Q) + 1;
 
-assign    R[0] = Mout_00;
-assign    R[1] = Mout_ff;
-assign    R[2] = Mout_fe;
-assign    R[3] = Mout_fd;
-assign    R[4] = Mout_fc;
-assign    R[5] = Mout_fb;
-assign    R[6] = Mout_fa;
-assign    R[7] = Mout_f9;
-assign    R[8] = Mout_f8;
-assign    R[9] = Mout_f7;
-assign      R[10] = Mout_f6;
-assign    R[11] = Mout_f5;
-assign    R[12] = Mout_f4;
-assign    R[13] = Mout_f3;
-assign    R[14] = Mout_f2;
-assign    R[15] = Mout_f1;
-
-assign Qf = (sig) ? Qflip : Q;
-
 always @(posedge clk)
-begin    
+begin
+    R1[0] <= Mout_00;
+    R1[1] <= Mout_ff;
+    R1[2] <= Mout_fe;
+    R1[3] <= Mout_fd;
+    R1[4] <= Mout_fc;
+    R1[5] <= Mout_fb;
+    R1[6] <= Mout_fa;
+    R1[7] <= Mout_f9;
+    R1[8] <= Mout_f8;
+    R1[9] <= Mout_f7;
+    R1[10] <= Mout_f6;
+    R1[11] <= Mout_f5;
+    R1[12] <= Mout_f4;
+    R1[13] <= Mout_f3;
+    R1[14] <= Mout_f2;
+    R1[15] <= Mout_f1;
+
+    Qf1 <= (sig) ? Qflip : Q;
+    
     M_c0 <= Mout_c0;
     M_bf <= Mout_bf;
     M_be <= Mout_be;
